@@ -1,0 +1,20 @@
+{
+  "name": "@cucumber-e2e/html-reporter",
+  "version": "0.0.1",
+  "description": "html reporter for cucumber-e2e framework",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "keywords": [
+    "reporter",
+    "html",
+    "protractor",
+    "cucumber"
+  ],
+  "author": "Alexander Galichenko",
+  "license": "MIT",
+  "devDependencies": {
+    "fs-extra": "^7.0.1"
+  }
+}

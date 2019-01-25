@@ -1,0 +1,175 @@
+.failed {
+    color: red;
+    background-color: #ffe9e9e3;
+}
+
+.skipped {
+    color: darkcyan;
+    background-color: #17a2b817;
+}
+
+.passed {
+    color: #2e6f19;
+    background-color: #8fbc8f47;
+}
+
+.scrollable {
+    overflow: scroll;
+    overflow-x: hidden;
+    height: 100%;
+}
+
+.full-page {
+    width: 100%;
+    height: 100%;
+    overflow-y: hidden
+}
+
+[role=button] {
+    cursor: pointer;
+}
+
+.panel {
+    width: auto;
+}
+
+.navbar {
+    display: block;
+    background-color: #464547;
+}
+
+.card-header {
+    min-height: 40px;
+    height: auto;
+    /*max-height: 56px;*/
+}
+
+.emb-container {
+    width: auto;
+}
+
+.row {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.col, .col-1, .col-10, .col-11, .col-12, .col-2, .col-3, .col-4, .col-5, .col-6, .col-7, .col-8, .col-9, .col-auto, .col-lg, .col-lg-1, .col-lg-10, .col-lg-11, .col-lg-12, .col-lg-2, .col-lg-3, .col-lg-4, .col-lg-5, .col-lg-6, .col-lg-7, .col-lg-8, .col-lg-9, .col-lg-auto, .col-md, .col-md-1, .col-md-10, .col-md-11, .col-md-12, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9, .col-md-auto, .col-sm, .col-sm-1, .col-sm-10, .col-sm-11, .col-sm-12, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9, .col-sm-auto, .col-xl, .col-xl-1, .col-xl-10, .col-xl-11, .col-xl-12, .col-xl-2, .col-xl-3, .col-xl-4, .col-xl-5, .col-xl-6, .col-xl-7, .col-xl-8, .col-xl-9, .col-xl-auto {
+    padding-right: 0;
+    padding-left: 0;
+}
+
+.input-group-text, .form-control {
+    border-radius: 0;
+}
+
+body {
+    font-size: 14px;
+    background-color: #EBEEF0;
+    height: 100%;
+}
+
+.popup {
+    position: fixed;
+    background-color: #38393b;
+    width: 90%;
+    height: 90%;
+    max-height: 90%;
+    max-width: 90%;
+    top: 5%;
+    left: 5%;
+    right: 5%;
+    bottom: 5%;
+    z-index: 2;
+}
+
+.preview {
+    overflow: auto;
+}
+
+.show {
+    display: block;
+}
+
+.modal {
+    border: none;
+    height: 100%;
+    max-height: 95%;
+}
+
+.modal-header {
+    padding-top: 8px;
+    padding-bottom: 8px;
+    border-radius: unset;
+}
+
+.modal-dialog {
+    height: 90%;
+    border-radius: unset;
+}
+
+.modal-title {
+    color: white;
+}
+
+.close {
+    color: white;
+}
+
+.row.content {
+    height: 100%;
+    padding-bottom: 150px;
+}
+
+.popup-body {
+    height: 90%;
+    max-height: 90%;
+}
+
+.cross {
+    color: white;
+    font-size: 20px;
+    position: relative;
+    float: right;
+}
+
+.error_log {
+    max-height: 200px;
+    overflow: auto;
+    overflow-x: hidden;
+}
+
+.custom-table, .custom-table tr, .custom-table th, .custom-table td {
+    border: 1px solid gray;
+    width: 100%;
+}
+
+.custom-table th, .custom-table td {
+    width: 25%;
+}
+
+/**
+Pie chart
+ */
+.pie {
+    width: 300px;
+    background: #38393b;
+    border-radius: 50%;
+}
+
+.pie circle {
+    fill: none;
+    stroke: gold;
+    stroke-width: 32;
+    animation: rotate 1.5s ease-in;
+}
+
+.pie-chart {
+    margin-top: 25px;
+    border: 1px solid gray;
+    padding: 1%;
+}
+
+#legend {
+    float: right;
+    right: -5%;
+}
