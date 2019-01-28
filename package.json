@@ -1,6 +1,6 @@
 {
   "name": "@cucumber-e2e/html-reporter",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "html reporter for cucumber-e2e framework",
   "main": "index.js",
   "repository": {
@@ -12,14 +12,12 @@
     "email": "alexandr.galichenko@gmail.com"
   },
   "keywords": [
+    "report",
     "reporter",
     "html",
     "protractor",
     "cucumber"
   ],
   "author": "Alexander Galichenko",
-  "license": "MIT",
-  "devDependencies": {
-    "fs-extra": "^7.0.1"
-  }
+  "license": "MIT"
 }

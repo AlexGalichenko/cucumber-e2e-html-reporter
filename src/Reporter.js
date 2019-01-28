@@ -1,4 +1,3 @@
-const fsextra = require("fs-extra");
 const fs = require("fs");
 const path = require("path");
 
@@ -19,7 +18,6 @@ class Reporter {
         templateHTML = templateHTML.replace("TEMPLATE_CSS", templateCSS);
 
         const targetDir = path.resolve(options.targetFolder);
-        fsextra.emptyDirSync(targetDir);
         fs.writeFileSync(targetDir + "/index.html", templateHTML);
     }
 
