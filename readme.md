@@ -16,4 +16,4 @@ HTMLReporter.generate({
 });
 ```
 
-![Example Report](./docs/exaple.png)
+![Example Report](./docs/example.png)

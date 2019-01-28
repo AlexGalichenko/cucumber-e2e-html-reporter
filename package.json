@@ -1,6 +1,6 @@
 {
   "name": "@cucumber-e2e/html-reporter",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "html reporter for cucumber-e2e framework",
   "main": "index.js",
   "repository": {
