@@ -294,7 +294,7 @@ const app = new Vue({
     template: `
         <div class="full-page">
             <nav class="navbar navbar-dark mr-auto">
-                <div class="navbar-brand" href="#">@cucumber-e2e-reporter</div>
+                <div class="navbar-brand" href="#">@cucumber-e2e/html-reporter</div>
                 <div class="navbar-brand nav-link active" href="#">Failed: {{getFailedCount()}}</div>
                 <div class="navbar-brand nav-link active" href="#">Total: {{getTotal()}}</div>
                 <a role="button" class="navbar-brand nav-link active" href="#" v-on:click="showStatPopup()">Statistic</a>

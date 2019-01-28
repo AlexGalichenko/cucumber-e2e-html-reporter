@@ -1,10 +1,15 @@
 {
   "name": "@cucumber-e2e/html-reporter",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "html reporter for cucumber-e2e framework",
   "main": "index.js",
-  "scripts": {
-    "test": "test"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AlexGalichenko/cucumber-e2e-html-reporter"
+  },
+  "bugs": {
+    "url": "https://github.com/AlexGalichenko/cucumber-e2e-html-reporter/issues",
+    "email": "alexandr.galichenko@gmail.com"
   },
   "keywords": [
     "reporter",
