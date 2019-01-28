@@ -1,7 +1,10 @@
-const replacePattern = /[\,\.\;\(\)\&\/\\\"\'\>\<\#\@\^\$\[\]\%\{\}]/g;
-
 const scenario = Vue.component('scenario', {
     props: ["scenario"],
+    computed: {
+        tags: function() {
+            return this.scenario.tags.map(tag => tag.name).join(" ")
+        }
+    },
     methods: {
         changeCurrentScenario: function() {
             this.$parent.$parent.$emit('change-scenario', this.scenario);
@@ -11,8 +14,11 @@ const scenario = Vue.component('scenario', {
         }
     },
     template: `
-        <div class="list-group-item" v-bind:class="{failed: isFailed(), passed: !isFailed()}">
-            <a v-on:click="changeCurrentScenario" role="button">{{scenario.name}}</a>
+        <div v-on:click="changeCurrentScenario" role="button" class="list-group-item" v-bind:class="{failed: isFailed(), passed: !isFailed()}">
+            <div class="row">
+                <span v-if="scenario.tags" class="tag">{{tags}}</span>
+            </div>
+            <div class="link">{{scenario.name}}</div>
         </div>
     `
 });
@@ -44,6 +50,7 @@ const detailsFeature = Vue.component('details-feature', {
         <div>
             <div v-if="currentFeature" class="card-header h6">
                 <div class="row">{{currentFeature.name}}</div>
+                <div v-if="currentFeature.description" class="description">{{currentFeature.description}}</div>
                 <div class="row custom-control custom-switch">
                     <input type="checkbox" class="custom-control-input" id="showFailedScenarios" v-on:click="toggleShowOnlyFailedScenariosSwitch()">
                     <label class="custom-control-label" for="showFailedScenarios">show only failed</label>
@@ -79,22 +86,36 @@ const detailsScenario = Vue.component("details-scenario", {
         isSkipped: function(status) {
             return status === "skipped"
         },
+        isAmbiguous: function(status) {
+            return status === "ambiguous"
+        },
+        isUndefined: function(status) {
+            return status === "undefined"
+        },
+        isPending: function(status) {
+            return status === "pending"
+        },
         openDataPopup: function(step) {
             this.$parent.$emit('open-popup', step);
         },
+        getDuration: function(step) {
+            if (step.result.duration) {
+                return (step.result.duration / 1000).toFixed(2) + "s"
+            } else return "0.00s"
+        }
     },
     template: `
         <div>
-            <div v-if="currentScenario" class="card-header h6">{{currentScenario.name}}</div>
+            <div v-if="currentScenario.name" class="card-header h6">{{currentScenario.name}}</div>
             <div class="list-group-flush container scrollable">
-                <div v-for="step in currentScenario.steps" class="list-group-item" v-bind:class="{passed: isPassed(step.result.status), failed: isFailed(step.result.status), skipped: isSkipped(step.result.status)}">
-                    <tr>
-                        <td class="col-8"><div class="col-1 badge">{{step.keyword}}</div>{{step.name ? step.name : ""}}</td>
-                        <td class="col-4"><a v-if="step.embeddings" role="button" v-on:click="openDataPopup(step)">attachment</a></td>
-                    </tr>
-                    <tr v-if="step.result.error_message">
-                        <div class="error_log">{{step.result.error_message}}</div>
-                    </tr>
+                <div v-for="step in currentScenario.steps" class="list-group-item" v-bind:class="{passed: isPassed(step.result.status), failed: isFailed(step.result.status), skipped: isSkipped(step.result.status), ambiguous: isAmbiguous(step.result.status), undefined: isUndefined(step.result.status), pending: isPending(step.result.status)}">
+                    <div class="step">
+                        <div class="duration badge">{{getDuration(step)}}</div>
+                        <div class="keyword badge">{{step.keyword}}</div>
+                        <div class="step-name">{{step.name ? step.name : ""}}</div>
+                        <div class="attachment-button"><a v-if="step.embeddings" role="button" v-on:click="openDataPopup(step)">&#128447;</a></div>
+                    </div>
+                    <div v-if="step.result.error_message" class="error_log">{{step.result.error_message}}</div>
                 </div>
             </div>
         </div>
@@ -104,6 +125,9 @@ const detailsScenario = Vue.component("details-scenario", {
 const feature = Vue.component('feature', {
     props: ["feature"],
     computed: {
+        tags: function() {
+            return this.feature.tags.map(tag => tag.name).join(" ")
+        }
     },
     methods: {
         changeCurrentFeature: function() {
@@ -114,11 +138,14 @@ const feature = Vue.component('feature', {
         }
     },
     template: `
-    <div v-on:click="changeCurrentFeature" v-bind:class="{failed: getFailedCount() > 0, passed: getFailedCount() === 0}">
-        <a role="button">
-            {{feature.name}}
-            <span class="badge badge-light">{{getFailedCount()}}</span>
-        </a>
+    <div v-on:click="changeCurrentFeature" role="button" v-bind:class="{failed: getFailedCount() > 0, passed: getFailedCount() === 0}">
+        <div class="row">
+            <span v-if="feature.tags" class="tag">{{tags}}</span>
+        </div>
+        <div class="row">
+            <span class="link">{{feature.name}}</span>
+            <span class="failed-badge badge badge-light">{{getFailedCount()}}</span>
+        </div>
     </div>
     `
 });
@@ -132,7 +159,28 @@ const popup = Vue.component('popup', {
             this.$parent.$emit('close-popup');
         },
         getImages: function () {
-            return this.popData.embeddings.filter(emb => emb.mime_type === "image/png" || emb.mime_type === "image/jpg")
+            function isSupportedMediaType(emb) {
+                if (emb.mime_type === "image/png") return true;
+                if (emb.mime_type === "image/jpg") return true;
+                if (emb.media) {
+                    if (emb.media.type === "image/png") return true;
+                    if (emb.media.type === "image/jpg") return true;
+                }
+                return false
+            }
+            return this.popData.embeddings.filter(emb => isSupportedMediaType(emb))
+        },
+        getTexts: function() {
+            function isSupportedMediaType(emb) {
+                return emb.mime_type === "text/plain"
+            }
+            return this.popData.embeddings.filter(emb => isSupportedMediaType(emb))
+        },
+        getText: function(text) {
+            const BASE_64_PATTERN = /^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)?$/;
+            if (BASE_64_PATTERN.test(text.data)) {
+                return atob(text.data)
+            } else return text.data
         },
         getBase64Image: function (emb) {
             return `data:${emb.mime_type};base64, ${emb.data}`
@@ -152,6 +200,9 @@ const popup = Vue.component('popup', {
                     <div class="scrollable popup-body">
                         <div v-for="emb of getImages()">
                             <img v-bind:src="getBase64Image(emb)" alt="Cannot be loaded" class="preview img-fluid"/>
+                        </div>
+                        <div v-for="textEmb of getTexts()">
+                            <span>{{getText(textEmb)}}</span>
                         </div>
                     </div>
                 </div>
@@ -297,7 +348,7 @@ const app = new Vue({
                 <div class="navbar-brand" href="#">@cucumber-e2e/html-reporter</div>
                 <div class="navbar-brand nav-link active" href="#">Failed: {{getFailedCount()}}</div>
                 <div class="navbar-brand nav-link active" href="#">Total: {{getTotal()}}</div>
-                <a role="button" class="navbar-brand nav-link active" href="#" v-on:click="showStatPopup()">Statistic</a>
+                <a role="button" class="navbar-brand nav-link active link" href="#" v-on:click="showStatPopup()">Statistic</a>
             </nav>
             <div class="row content">
                 <div class="col-3">
