@@ -1,3 +1,7 @@
+/**
+    Statuses
+ */
+
 .failed {
     color: red;
     background-color: #ffe9e9e3;
@@ -11,6 +15,21 @@
 .passed {
     color: #2e6f19;
     background-color: #8fbc8f47;
+}
+
+.ambiguous {
+    color: #3c3e3e;
+    background-color: #c1c1c1;
+}
+
+.pending {
+    color: #3c3e3e;
+    background-color: #c1c1c1;
+}
+
+.undefined {
+    color: #3c3e3e;
+    background-color: #c1c1c1;
 }
 
 .scrollable {
@@ -41,13 +60,16 @@
 .card-header {
     min-height: 40px;
     height: auto;
-    /*max-height: 56px;*/
+    border-left: 1px solid darkgray;
 }
 
 .emb-container {
     width: auto;
 }
 
+.container {
+    padding-left: 0px;
+}
 .row {
     margin-left: 0;
     margin-right: 0;
@@ -172,4 +194,44 @@ Pie chart
 #legend {
     float: right;
     right: -5%;
+}
+
+.tag {
+    font-size: 10px;
+    font-weight: bold ;
+}
+
+.failed-badge {
+    margin-left: 5px;
+    line-height: unset;
+}
+
+.step {
+    width: 100%;
+}
+
+.attachment-button, .duration, .step-name, .keyword {
+    display: inline-block;
+}
+
+.duration, .keyword {
+    width: 8%;
+}
+
+.step-name {
+    width: auto;
+}
+
+.attachment-button {
+    width: auto;
+    margin-left: auto;
+    margin-right: 0;
+}
+
+.link:hover {
+    text-decoration: underline;
+}
+
+.description {
+    font-size: 10px;
 }
