@@ -2,7 +2,7 @@ const scenario = Vue.component('scenario', {
     props: ["scenario"],
     computed: {
         tags: function() {
-            return this.scenario.tags.map(tag => tag.name).join(" ")
+            return Array.from(new Set(this.scenario.tags.map(tag => tag.name))).join(" ")
         }
     },
     methods: {
@@ -48,7 +48,7 @@ const detailsFeature = Vue.component('details-feature', {
     },
     template: `
         <div>
-            <div v-if="currentFeature" class="card-header h6">
+            <div v-if="currentFeature" class="card-header h6 header">
                 <div class="row">{{currentFeature.name}}</div>
                 <div v-if="currentFeature.description" class="description">{{currentFeature.description}}</div>
                 <div class="row custom-control custom-switch">
@@ -56,13 +56,13 @@ const detailsFeature = Vue.component('details-feature', {
                     <label class="custom-control-label" for="showFailedScenarios">show only failed</label>
                 </div>
             </div>
-            <div class="input-group mb-3">
+            <div class="input-group filter">
                 <div class="input-group-prepend">
                     <span class="input-group-text" id="basic-addon1">Filter</span>
                 </div>
                 <input v-model="filterText" type="text" class="form-control" aria-describedby="basic-addon1">
             </div>
-            <div class="scrollable">
+            <div class="scrollable panel">
                 <div v-for="scenario in filterScenarios(currentFeature.elements)" class="list-group list-group-flush">
                     <scenario v-bind:scenario="scenario"></scenario>
                 </div>
@@ -100,15 +100,16 @@ const detailsScenario = Vue.component("details-scenario", {
         },
         getDuration: function(step) {
             if (step.result.duration) {
-                return (step.result.duration / 1000).toFixed(2) + "s"
+                return (step.result.duration / 1000000000).toFixed(2) + "s"
             } else return "0.00s"
         }
     },
     template: `
-        <div>
-            <div v-if="currentScenario.name" class="card-header h6">{{currentScenario.name}}</div>
-            <div class="list-group-flush container scrollable">
-                <div v-for="step in currentScenario.steps" class="list-group-item" v-bind:class="{passed: isPassed(step.result.status), failed: isFailed(step.result.status), skipped: isSkipped(step.result.status), ambiguous: isAmbiguous(step.result.status), undefined: isUndefined(step.result.status), pending: isPending(step.result.status)}">
+        <div class="col">
+            <div v-if="currentScenario.name" class="card-header h6 header">{{currentScenario.name}}</div>
+            <div class="scrollable panel scenario-details">
+                <div v-for="step in currentScenario.steps" class="list-group list-group-flash" >
+                    <div class="step-item list-group-item" v-bind:class="{passed: isPassed(step.result.status), failed: isFailed(step.result.status), skipped: isSkipped(step.result.status), ambiguous: isAmbiguous(step.result.status), undefined: isUndefined(step.result.status), pending: isPending(step.result.status)}">
                     <div class="step">
                         <div class="duration badge">{{getDuration(step)}}</div>
                         <div class="keyword badge">{{step.keyword}}</div>
@@ -116,6 +117,8 @@ const detailsScenario = Vue.component("details-scenario", {
                         <div class="attachment-button"><a v-if="step.embeddings" role="button" v-on:click="openDataPopup(step)">&#128447;</a></div>
                     </div>
                     <div v-if="step.result.error_message" class="error_log">{{step.result.error_message}}</div>
+                    </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -126,7 +129,7 @@ const feature = Vue.component('feature', {
     props: ["feature"],
     computed: {
         tags: function() {
-            return this.feature.tags.map(tag => tag.name).join(" ")
+            return Array.from(new Set(this.feature.tags.map(tag => tag.name))).join(" ")
         }
     },
     methods: {
@@ -161,10 +164,16 @@ const popup = Vue.component('popup', {
         getImages: function () {
             function isSupportedMediaType(emb) {
                 if (emb.mime_type === "image/png") return true;
-                if (emb.mime_type === "image/jpg") return true;
+                if (emb.mime_type === "image/jpeg") return true;
+                if (emb.mime_type === "image/gif") return true;
+                if (emb.mime_type === "image/bmp") return true;
+                if (emb.mime_type === "image/svg+xml") return true;
                 if (emb.media) {
                     if (emb.media.type === "image/png") return true;
-                    if (emb.media.type === "image/jpg") return true;
+                    if (emb.media.type === "image/jpeg") return true;
+                    if (emb.media.type === "image/gif") return true;
+                    if (emb.media.type === "image/bmp") return true;
+                    if (emb.media.type === "image/svg+xml") return true;
                 }
                 return false
             }
@@ -184,6 +193,15 @@ const popup = Vue.component('popup', {
         },
         getBase64Image: function (emb) {
             return `data:${emb.mime_type};base64, ${emb.data}`
+        },
+        getJsons: function() {
+            function isSupportedMediaType(emb) {
+                return emb.mime_type === "application/json"
+            }
+            return this.popData.embeddings.filter(emb => isSupportedMediaType(emb))
+        },
+        getJsonText: function (emb) {
+            return JSON.stringify(JSON.parse(emb.data), undefined, 2);
         }
     },
     template: `
@@ -203,6 +221,9 @@ const popup = Vue.component('popup', {
                         </div>
                         <div v-for="textEmb of getTexts()">
                             <span>{{getText(textEmb)}}</span>
+                        </div>
+                        <div v-for="jsonEmb of getJsons()">
+                            <pre>{{getJsonText(jsonEmb)}}</pre>
                         </div>
                     </div>
                 </div>
@@ -343,7 +364,7 @@ const app = new Vue({
         }
     },
     template: `
-        <div class="full-page">
+        <div class="">
             <nav class="navbar navbar-dark mr-auto">
                 <div class="navbar-brand" href="#">@cucumber-e2e/html-reporter</div>
                 <div class="navbar-brand nav-link active" href="#">Failed: {{getFailedCount()}}</div>
@@ -352,14 +373,14 @@ const app = new Vue({
             </nav>
             <div class="row content">
                 <div class="col-3">
-                    <div class="card-header h6">
+                    <div class="card-header h6 header">
                         <span class="row">Features</span>
                         <div class="row custom-control custom-switch">
                             <input type="checkbox" class="custom-control-input" id="showFailedFeatures" v-on:click="toggleShowOnlyFailedSwitch()">
                             <label class="custom-control-label" for="showFailedFeatures">show only failed</label>
                         </div>
                     </div>
-                    <div class="input-group mb-3">
+                    <div class="input-group filter">
                         <div class="input-group-prepend">
                             <span class="input-group-text" id="basic-addon1">Filter</span>
                         </div>
@@ -371,12 +392,12 @@ const app = new Vue({
                         </div>
                     </div>
                 </div>
-                <div class="col-3 panel" id="toc">
+                <div class="col-3" id="featureDetails">
                     <div id="details-feature">
                         <details-feature v-if="currentFeature" v-bind:current-feature="currentFeature"></details-feature>
                     </div>
                 </div>
-                <div class="col panel">
+                <div class="col" id="scenarioDetails">
                     <div id="details-scenario">
                         <details-scenario v-if="currentScenario" v-bind:current-scenario="currentScenario"></details-scenario>
                     </div>
